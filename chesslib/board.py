@@ -39,7 +39,7 @@ class Board:
             for y, letter in enumerate(row):
                 if self._is_cell_empty(letter):
                     continue
-                coords = BoardCoordinates(7 - x, y)
+                coords = BoardCoordinates(x, 7 - y)
                 letter_coords = coords.letter_notation()
                 self.state[letter_coords] = generate_piece(letter)
                 self.state[letter_coords].place(self)
@@ -48,6 +48,9 @@ class Board:
             self.current_player = Color.WHITE
         else:
             self.current_player = Color.BLACK
+
+    def highlight(self, pos: BoardCoordinates):
+        self.highlighted.append(pos)
 
     def _make_move(self, start: BoardCoordinates, end: BoardCoordinates):
         moved_piece = self.state[start.letter_notation()]
@@ -59,6 +62,7 @@ class Board:
         self.current_player = enemy
 
         self._print_move(start, end)
+        self.highlighted = []
 
     def _update_coord_piece(self, coord: BoardCoordinates, piece: Piece | None):
         """

@@ -12,10 +12,21 @@ class ChessEngine:
         self.screen = screen
         self.icons: dict[str, pygame.image] = {}
 
+        self.selected_position = None
+
         self.load_images()
+
+    def click(self, x: int, y: int):
+        clicked_position = BoardCoordinates(y // SQUARE_SIZE, x // SQUARE_SIZE)
+        clicked_piece = self.board.get_piece_at(clicked_position)
+        if clicked_piece is not None and clicked_piece.color == self.board.current_player:
+            self.board.highlighted = []
+            self.board.highlight(clicked_position)
+            self.selected_position = clicked_position
 
     def draw_game(self):
         self.draw_squares()
+        self.draw_highlighted()
         self.draw_pieces()
 
     def draw_squares(self):
@@ -24,6 +35,12 @@ class ChessEngine:
             for col in range(BOARD_SIZE):
                 square_color = colors[(row + col) % 2]
                 pygame.draw.rect(self.screen, square_color, pygame.Rect(row * SQUARE_SIZE, col * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+
+    def draw_highlighted(self):
+        for h in self.board.highlighted:
+            x = h.col * SQUARE_SIZE
+            y = h.row * SQUARE_SIZE
+            pygame.draw.rect(self.screen, "dark green", pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE))
 
     def draw_pieces(self):
         for row in range(BOARD_SIZE):

@@ -18,12 +18,17 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
+            if event.type == pygame.MOUSEBUTTONUP:
+                x, y = pygame.mouse.get_pos()
+                game.click(x, y)
+
         game.draw_game()
 
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     main()
