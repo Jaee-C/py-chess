@@ -39,7 +39,7 @@ class Board:
             for y, letter in enumerate(row):
                 if self._is_cell_empty(letter):
                     continue
-                coords = BoardCoordinates(7 - x + 1, y + 1)
+                coords = BoardCoordinates(7 - x, y)
                 letter_coords = coords.letter_notation()
                 self.state[letter_coords] = generate_piece(letter)
                 self.state[letter_coords].place(self)

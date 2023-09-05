@@ -7,7 +7,7 @@ class Color(Enum):
     WHITE = 1
 
     def __str__(self) -> str:
-        return str(self.value)
+        return str(self.name.lower())
 
 
 class BoardCoordinates:
@@ -25,17 +25,17 @@ class BoardCoordinates:
         return self.col == other.col and self.row == other.row
 
     def is_in_bounds(self) -> bool:
-        return 0 < self.row <= BOARD_SIZE and 0 < self.col <= BOARD_SIZE
+        return 0 <= self.row < BOARD_SIZE and 0 <= self.col < BOARD_SIZE
 
     def letter_notation(self) -> str:
         if not self.is_in_bounds():
             raise OutOfBoundsError
 
-        return f"{COLUMN_LABELS[self.col - 1]}{ROW_LABELS[self.row - 1]}"
+        return f"{COLUMN_LABELS[self.col]}{ROW_LABELS[self.row]}"
 
 
 def parse_letter_coordinates(value: str) -> BoardCoordinates:
-    col = COLUMN_LABELS.index(value[0]) + 1
-    row = ROW_LABELS.index(value[1]) + 1
+    col = COLUMN_LABELS.index(value[0])
+    row = ROW_LABELS.index(value[1])
 
     return BoardCoordinates(row, col)
