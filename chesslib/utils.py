@@ -1,10 +1,25 @@
+from enum import Enum
 from .constants import BOARD_SIZE, COLUMN_LABELS, ROW_LABELS, OutOfBoundsError
+
+
+class Colour(Enum):
+    BLACK = 0
+    WHITE = 1
 
 
 class BoardCoordinates:
     def __init__(self, row: int, col: int):
         self.row = row
         self.col = col
+
+    def __str__(self):
+        return self.letter_notation()
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, BoardCoordinates):
+            raise TypeError("BoardCoordinates can only be compared to BoardCoordinates")
+
+        return self.col == other.col and self.row == other.row
 
     def is_in_bounds(self) -> bool:
         return 0 < self.row <= BOARD_SIZE and 0 < self.col <= BOARD_SIZE

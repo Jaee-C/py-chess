@@ -1,6 +1,7 @@
 import unittest
 from parameterized import parameterized
 
+from chesslib.constants import BOARD_SIZE
 from chesslib.utils import BoardCoordinates
 
 
@@ -19,10 +20,10 @@ class TestBoardCoordinates(unittest.TestCase):
         (0, -34, False),
         (0, 0, False),
         (1, 5, True),
-        (9, 2, False),
-        (-1, 99, False),
+        (BOARD_SIZE + 1, 2, False),
+        (-1, BOARD_SIZE + 99, False),
         (1, 1, True),
-        (8, 8, True)
+        (BOARD_SIZE, BOARD_SIZE, True)
     ])
     def test_bounds(self, row, col, expected):
         coordinates = BoardCoordinates(row, col)
