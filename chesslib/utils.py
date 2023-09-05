@@ -2,9 +2,12 @@ from enum import Enum
 from .constants import BOARD_SIZE, COLUMN_LABELS, ROW_LABELS, OutOfBoundsError
 
 
-class Colour(Enum):
+class Color(Enum):
     BLACK = 0
     WHITE = 1
+
+    def __str__(self) -> str:
+        return str(self.value)
 
 
 class BoardCoordinates:

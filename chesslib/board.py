@@ -1,7 +1,7 @@
 import re
 
 from .constants import INIT_FEN, OutOfBoundsError, NotYourTurn
-from .utils import Colour, BoardCoordinates
+from .utils import Color, BoardCoordinates
 from .piece import Piece, generate_piece
 
 
@@ -12,7 +12,7 @@ def expand_blanks(match: re.Match[str]) -> str:
 class Board:
     def __init__(self):
         self.state: dict[str, Piece] = {}
-        self.current_player: Colour = Colour.WHITE
+        self.current_player: Color = Color.WHITE
 
         self.positions = []
         self.highlighted: list[BoardCoordinates] = []
@@ -24,7 +24,7 @@ class Board:
             raise OutOfBoundsError
 
         moved_piece = self.get_piece_at(start)
-        if not moved_piece.colour == self.current_player:
+        if not moved_piece.color == self.current_player:
             raise NotYourTurn
 
         self._make_move(start, end)
@@ -39,15 +39,15 @@ class Board:
             for y, letter in enumerate(row):
                 if self._is_cell_empty(letter):
                     continue
-                coords = BoardCoordinates(7 - x, y)
+                coords = BoardCoordinates(7 - x + 1, y + 1)
                 letter_coords = coords.letter_notation()
                 self.state[letter_coords] = generate_piece(letter)
                 self.state[letter_coords].place(self)
 
         if fen[1] == "w":
-            self.current_player = Colour.WHITE
+            self.current_player = Color.WHITE
         else:
-            self.current_player = Colour.BLACK
+            self.current_player = Color.BLACK
 
     def _make_move(self, start: BoardCoordinates, end: BoardCoordinates):
         moved_piece = self.state[start.letter_notation()]
@@ -71,10 +71,10 @@ class Board:
         else:
             self.state[pos] = piece
 
-    def get_opponent(self, color: Colour):
-        if color == Colour.WHITE:
-            return Colour.BLACK
-        return Colour.WHITE
+    def get_opponent(self, color: Color):
+        if color == Color.WHITE:
+            return Color.BLACK
+        return Color.WHITE
 
     def get_piece_at(self, location: BoardCoordinates) -> Piece | None:
         coordinates = location.letter_notation()

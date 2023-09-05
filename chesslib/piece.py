@@ -1,16 +1,15 @@
 from abc import ABC, abstractmethod
 
-from .utils import BoardCoordinates, Colour
+from .utils import BoardCoordinates, Color
 from .constants import InvalidPiece, BOARD_SIZE
-from .board import Board
 
 
 Direction = tuple[int, int]
 
 
 class Piece(ABC):
-    def __init__(self, colour: Colour):
-        self.colour = colour
+    def __init__(self, color: Color):
+        self.color = color
         self.board = None
         self.abbreviation = "None"
 
@@ -18,7 +17,7 @@ class Piece(ABC):
     def possible_moves(self, position: BoardCoordinates) -> list[BoardCoordinates]:
         pass
 
-    def place(self, board: Board):
+    def place(self, board):
         self.board = board
 
     def orthogonal_moves(self, position: BoardCoordinates, distance: int) -> list[BoardCoordinates]:
@@ -68,13 +67,13 @@ class Piece(ABC):
         return position.is_in_bounds()
 
     def _is_own_piece(self, position: BoardCoordinates) -> bool:
-        # TODO: check if there a piece of colour `self.colour` at `position`
+        # TODO: check if there a piece of color `self.color` at `position`
         return False
 
 
 class Pawn(Piece):
-    def __init__(self, colour: Colour):
-        super().__init__(colour)
+    def __init__(self, color: Color):
+        super().__init__(color)
         self.abbreviation = "P"
 
     def possible_moves(self, position: BoardCoordinates) -> list[BoardCoordinates]:
@@ -82,8 +81,8 @@ class Pawn(Piece):
 
 
 class Knight(Piece):
-    def __init__(self, colour: Colour):
-        super().__init__(colour)
+    def __init__(self, color: Color):
+        super().__init__(color)
         self.abbreviation = "N"
 
     def possible_moves(self, position: BoardCoordinates) -> list[BoardCoordinates]:
@@ -103,8 +102,8 @@ class Knight(Piece):
 
 
 class Rook(Piece):
-    def __init__(self, colour: Colour):
-        super().__init__(colour)
+    def __init__(self, color: Color):
+        super().__init__(color)
         self.abbreviation = "R"
 
     def possible_moves(self, position: BoardCoordinates) -> list[BoardCoordinates]:
@@ -112,8 +111,8 @@ class Rook(Piece):
 
 
 class Bishop(Piece):
-    def __init__(self, colour: Colour):
-        super().__init__(colour)
+    def __init__(self, color: Color):
+        super().__init__(color)
         self.abbreviation = "B"
 
     def possible_moves(self, position: BoardCoordinates) -> list[BoardCoordinates]:
@@ -121,8 +120,8 @@ class Bishop(Piece):
 
 
 class Queen(Piece):
-    def __init__(self, colour: Colour):
-        super().__init__(colour)
+    def __init__(self, color: Color):
+        super().__init__(color)
         self.abbreviation = "Q"
 
     def possible_moves(self, position: BoardCoordinates) -> list[BoardCoordinates]:
@@ -130,8 +129,8 @@ class Queen(Piece):
 
 
 class King(Piece):
-    def __init__(self, colour: Colour):
-        super().__init__(colour)
+    def __init__(self, color: Color):
+        super().__init__(color)
         self.abbreviation = "K"
 
     def possible_moves(self, position: BoardCoordinates) -> list[BoardCoordinates]:
@@ -140,20 +139,20 @@ class King(Piece):
 
 def generate_piece(symbol: str) -> Piece:
     if symbol.isupper():
-        colour = Colour.WHITE
+        color = Color.WHITE
     else:
-        colour = Colour.BLACK
+        color = Color.BLACK
 
     piece = symbol.upper()
     if piece == "P":
-        return Pawn(colour)
+        return Pawn(color)
     if piece == "R":
-        return Rook(colour)
+        return Rook(color)
     if piece == "N":
-        return Knight(colour)
+        return Knight(color)
     if piece == "B":
-        return Bishop(colour)
+        return Bishop(color)
     if piece == "Q":
-        return Queen(colour)
+        return Queen(color)
     if piece == "K":
-        return King(colour)
+        return King(color)
