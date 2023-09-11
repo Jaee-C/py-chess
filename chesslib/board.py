@@ -19,7 +19,7 @@ class Board:
 
         self.load(INIT_FEN)
 
-    def move(self, start: BoardCoordinates, end: BoardCoordinates):
+    def move(self, start: BoardCoordinates, end: BoardCoordinates) -> bool:
         """Move piece from `start` to `end`, only if the move is valid. Prints out a successful move to console."""
         if not start.is_in_bounds() or not end.is_in_bounds():
             raise OutOfBoundsError
@@ -30,10 +30,11 @@ class Board:
             raise NotYourTurn
 
         if not self._valid_move(start, end):
-            return
+            return False
 
         self._make_move(start, end)
         self._finish_move(moved_piece, target, start, end)
+        return True
 
     def _valid_move(self, start: BoardCoordinates, end: BoardCoordinates) -> bool:
         moved_piece = self.get_piece_at(start)

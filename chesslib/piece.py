@@ -44,14 +44,14 @@ class Piece(ABC):
         collision = False
         moves = []
 
-        for i in range(distance):
-            if not collision:
+        for i in range(1, distance):
+            if collision:
                 break
 
             upcoming = self._increment(position, direction, i)
             if not self._collision(upcoming):
                 moves.append(upcoming)
-            elif self._is_own_piece(upcoming) or not upcoming.is_in_bounds():
+            elif not upcoming.is_in_bounds() or self._is_own_piece(upcoming):
                 collision = True
             else:
                 moves.append(upcoming)
@@ -64,11 +64,12 @@ class Piece(ABC):
 
     def _collision(self, position: BoardCoordinates) -> bool:
         # TODO: check if there's a piece on the board at `position`
-        return position.is_in_bounds()
+        return not position.is_in_bounds() or self.board.get_piece_at(position) is not None
 
     def _is_own_piece(self, position: BoardCoordinates) -> bool:
         # TODO: check if there a piece of color `self.color` at `position`
-        return False
+        piece = self.board.get_piece_at(position)
+        return piece is not None and self.board.get_piece_at(position).color == self.color
 
 
 class Pawn(Piece):
@@ -89,7 +90,6 @@ class Pawn(Piece):
         legal_moves = []
         blocked = self.board.occupied(Color.WHITE) + self.board.occupied(Color.BLACK)
         forward = BoardCoordinates(position.row + direction, position.col)
-        print([str(b) for b in blocked], str(forward))
 
         # Can we move forward?
         if forward.is_in_bounds() and forward not in blocked:

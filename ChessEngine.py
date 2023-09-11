@@ -26,8 +26,8 @@ class ChessEngine:
         if clicked_piece is not None and clicked_piece.color == self.board.current_player:
             self._set_piece(clicked_position)
             return
-        self.board.move(self.selected_position, clicked_position)
-        self.selected_position = None
+        if self.board.move(self.selected_position, clicked_position):
+            self.selected_position = None
 
     def suggest_moves(self, pos: BoardCoordinates):
         piece = self.board.get_piece_at(pos)
