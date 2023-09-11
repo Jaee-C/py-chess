@@ -21,13 +21,13 @@ class ChessEngine:
         clicked_piece = self.board.get_piece_at(clicked_position)
         if self.selected_position is None:
             if clicked_piece is not None and clicked_piece.color == self.board.current_player:
-                self.board.highlighted = []
-                self.board.highlight(clicked_position)
-                self.selected_position = clicked_position
-                self.suggest_moves(clicked_position)
-        else:
-            self.board.move(self.selected_position, clicked_position)
-            self.selected_position = None
+                self._set_piece(clicked_position)
+            return
+        if clicked_piece is not None and clicked_piece.color == self.board.current_player:
+            self._set_piece(clicked_position)
+            return
+        self.board.move(self.selected_position, clicked_position)
+        self.selected_position = None
 
     def suggest_moves(self, pos: BoardCoordinates):
         piece = self.board.get_piece_at(pos)
@@ -73,6 +73,11 @@ class ChessEngine:
         for c in color:
             for p in piece:
                 self.icons[c + p] = pygame.image.load(f"img/{c}{p}.png")
+
+    def _set_piece(self, pos: BoardCoordinates):
+        self.selected_position = pos
+        self.suggest_moves(pos)
+        self.board.highlight(pos)
 
     def _get_piece_name(self, piece: Piece) -> str:
         return f"{piece.color}{piece.abbreviation.lower()}"

@@ -20,6 +20,7 @@ class Board:
         self.load(INIT_FEN)
 
     def move(self, start: BoardCoordinates, end: BoardCoordinates):
+        """Move piece from `start` to `end`, only if the move is valid. Prints out a successful move to console."""
         if not start.is_in_bounds() or not end.is_in_bounds():
             raise OutOfBoundsError
 
@@ -28,8 +29,19 @@ class Board:
         if not moved_piece.color == self.current_player:
             raise NotYourTurn
 
+        if not self._valid_move(start, end):
+            return
+
         self._make_move(start, end)
         self._finish_move(moved_piece, target, start, end)
+
+    def _valid_move(self, start: BoardCoordinates, end: BoardCoordinates) -> bool:
+        moved_piece = self.get_piece_at(start)
+        legal_moves = moved_piece.possible_moves(start)
+        if end in legal_moves:
+            return True
+        print("Illegal move")
+        return False
 
     def load(self, config: str):
         """Import state from FEN notation"""

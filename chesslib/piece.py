@@ -77,7 +77,36 @@ class Pawn(Piece):
         self.abbreviation = "P"
 
     def possible_moves(self, position: BoardCoordinates) -> list[BoardCoordinates]:
-        return []
+        if self.color == Color.WHITE:
+            home_row = 6
+            direction = -1
+            enemy = Color.BLACK
+        else:
+            home_row = 1
+            direction = 1
+            enemy = Color.WHITE
+
+        legal_moves = []
+        blocked = self.board.occupied(Color.WHITE) + self.board.occupied(Color.BLACK)
+        forward = BoardCoordinates(position.row + direction, position.col)
+        print([str(b) for b in blocked], str(forward))
+
+        # Can we move forward?
+        if forward.is_in_bounds() and forward not in blocked:
+            legal_moves.append(forward)
+            if position.row == home_row:
+                # If pawn in starting position we can do a double move
+                double_forward = BoardCoordinates(forward.row + direction, forward.col)
+                if double_forward.is_in_bounds() and double_forward not in blocked:
+                    legal_moves.append(double_forward)
+
+        # Attacking [-1, 1]
+        for a in range(-1, 2, 2):
+            attack = BoardCoordinates(position.row + direction, position.col + a)
+            if attack.is_in_bounds() and attack in self.board.occupied(enemy):
+                legal_moves.append(attack)
+
+        return legal_moves
 
 
 class Knight(Piece):
