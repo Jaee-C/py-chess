@@ -1,7 +1,7 @@
 import re
 
 from .constants import INIT_FEN, OutOfBoundsError, NotYourTurn
-from .utils import Color, BoardCoordinates
+from .utils import Color, BoardCoordinates, parse_letter_coordinates
 from .piece import Piece, generate_piece
 
 
@@ -52,6 +52,16 @@ class Board:
 
     def highlight(self, pos: BoardCoordinates):
         self.highlighted.append(pos)
+
+    def occupied(self, color: Color) -> list[BoardCoordinates]:
+        """Return all coordinates occupied by player `color`"""
+        result: list[str] = []
+
+        for coord in self.state:
+            if self.state[coord].color == color:
+                result.append(coord)
+
+        return list(map(parse_letter_coordinates, result))
 
     def _make_move(self, start: BoardCoordinates, end: BoardCoordinates):
         moved_piece = self.state[start.letter_notation()]

@@ -77,7 +77,7 @@ class Pawn(Piece):
         self.abbreviation = "P"
 
     def possible_moves(self, position: BoardCoordinates) -> list[BoardCoordinates]:
-        pass
+        return []
 
 
 class Knight(Piece):

@@ -36,6 +36,6 @@ class BoardCoordinates:
 
 def parse_letter_coordinates(value: str) -> BoardCoordinates:
     col = COLUMN_LABELS.index(value[0])
-    row = ROW_LABELS.index(value[1])
+    row = ROW_LABELS.index(int(value[1]))
 
     return BoardCoordinates(row, col)

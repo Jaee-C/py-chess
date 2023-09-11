@@ -24,9 +24,14 @@ class ChessEngine:
                 self.board.highlighted = []
                 self.board.highlight(clicked_position)
                 self.selected_position = clicked_position
+                self.suggest_moves(clicked_position)
         else:
             self.board.move(self.selected_position, clicked_position)
             self.selected_position = None
+
+    def suggest_moves(self, pos: BoardCoordinates):
+        piece = self.board.get_piece_at(pos)
+        self.board.highlighted = piece.possible_moves(pos)
 
     def draw_game(self):
         self.draw_squares()
