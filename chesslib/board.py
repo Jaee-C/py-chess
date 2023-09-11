@@ -24,11 +24,12 @@ class Board:
             raise OutOfBoundsError
 
         moved_piece = self.get_piece_at(start)
+        target = self.get_piece_at(end)
         if not moved_piece.color == self.current_player:
             raise NotYourTurn
 
         self._make_move(start, end)
-        self._finish_move(start, end)
+        self._finish_move(moved_piece, target, start, end)
 
     def load(self, config: str):
         """Import state from FEN notation"""
@@ -57,11 +58,11 @@ class Board:
         self._update_coord_piece(start, None)
         self._update_coord_piece(end, moved_piece)
 
-    def _finish_move(self, start: BoardCoordinates, end: BoardCoordinates):
+    def _finish_move(self, moved_piece: Piece, target: Piece, start: BoardCoordinates, end: BoardCoordinates):
         enemy = self.get_opponent(self.current_player)
         self.current_player = enemy
 
-        self._print_move(start, end)
+        self._print_move(moved_piece, target, start, end)
         self.highlighted = []
 
     def _update_coord_piece(self, coord: BoardCoordinates, piece: Piece | None):
@@ -87,12 +88,10 @@ class Board:
             return None
         return self.state[coordinates]
 
-    def _print_move(self, source: BoardCoordinates, destination: BoardCoordinates):
-        piece = self.get_piece_at(source)
-        abbr = piece.abbreviation
-        target_piece = self.get_piece_at(destination)
+    def _print_move(self, moved_piece: Piece, target: Piece, source: BoardCoordinates, destination: BoardCoordinates):
+        abbr = moved_piece.abbreviation
 
-        if target_piece is None:
+        if target is None:
             movetext = abbr + destination.letter_notation().lower()
         else:
             movetext = abbr + "x" + destination.letter_notation()

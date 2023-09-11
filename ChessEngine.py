@@ -19,10 +19,14 @@ class ChessEngine:
     def click(self, x: int, y: int):
         clicked_position = BoardCoordinates(y // SQUARE_SIZE, x // SQUARE_SIZE)
         clicked_piece = self.board.get_piece_at(clicked_position)
-        if clicked_piece is not None and clicked_piece.color == self.board.current_player:
-            self.board.highlighted = []
-            self.board.highlight(clicked_position)
-            self.selected_position = clicked_position
+        if self.selected_position is None:
+            if clicked_piece is not None and clicked_piece.color == self.board.current_player:
+                self.board.highlighted = []
+                self.board.highlight(clicked_position)
+                self.selected_position = clicked_position
+        else:
+            self.board.move(self.selected_position, clicked_position)
+            self.selected_position = None
 
     def draw_game(self):
         self.draw_squares()
