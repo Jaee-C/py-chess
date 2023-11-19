@@ -1,7 +1,7 @@
 import re
 
 from .constants import INIT_FEN, OutOfBoundsError, NotYourTurn, InvalidPiece
-from .utils import Color, BoardCoordinates, parse_letter_coordinates
+from .utils import Color, BoardCoordinates, parse_letter_coordinates, get_opponent
 from .piece import Piece, generate_piece
 
 
@@ -38,10 +38,19 @@ class Board:
     def _valid_move(self, start: BoardCoordinates, end: BoardCoordinates) -> bool:
         moved_piece = self.get_piece_at(start)
         legal_moves = moved_piece.possible_moves(start)
-        if end in legal_moves:
-            return True
-        print("Illegal move")
-        return False
+        if end not in legal_moves:
+            print("Illegal move")
+            return False
+
+        # Check for check
+        self._make_move(start, end)
+        if self.is_in_check(self.current_player):
+            self._make_move(end, start)
+            print("You're in check!")
+            return False
+        self._make_move(end, start)
+
+        return True
 
     def load(self, config: str):
         """Import state from FEN notation"""
@@ -99,7 +108,7 @@ class Board:
         self._update_coord_piece(end, moved_piece)
 
     def _finish_move(self, moved_piece: Piece, target: Piece, start: BoardCoordinates, end: BoardCoordinates):
-        enemy = self.get_opponent(self.current_player)
+        enemy = get_opponent(self.current_player)
         self.current_player = enemy
 
         self._print_move(moved_piece, target, start, end)
@@ -114,11 +123,6 @@ class Board:
             del self.state[pos]
         else:
             self.state[pos] = piece
-
-    def get_opponent(self, color: Color):
-        if color == Color.WHITE:
-            return Color.BLACK
-        return Color.WHITE
 
     def get_piece_at(self, location: BoardCoordinates) -> Piece | None:
         coordinates = location.letter_notation()

@@ -46,3 +46,9 @@ def parse_letter_coordinates(value: str) -> BoardCoordinates:
     row = ROW_LABELS.index(int(value[1]))
 
     return BoardCoordinates(row, col)
+
+
+def get_opponent(color: Color):
+    if color == Color.WHITE:
+        return Color.BLACK
+    return Color.WHITE

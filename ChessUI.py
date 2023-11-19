@@ -1,7 +1,7 @@
 import pygame
 
 from constants import BOARD_SIZE, SQUARE_SIZE
-from chesslib.utils import BoardCoordinates
+from chesslib.utils import BoardCoordinates, Color, get_opponent
 from chesslib.board import Board
 from chesslib.piece import Piece
 
@@ -14,6 +14,7 @@ class ChessUI:
 
         self.selected_position = None
         self.highlighted: list[BoardCoordinates] = []
+        self.check: Color | None = None
 
         self.load_images()
 
@@ -30,6 +31,9 @@ class ChessUI:
         if self.board.move(self.selected_position, clicked_position):
             self.selected_position = None
             self.highlighted = []
+
+        if clicked_piece is not None and self.board.is_in_check(get_opponent(clicked_piece.color)):
+            self.check = get_opponent(clicked_piece.color)
 
     def suggest_moves(self, pos: BoardCoordinates):
         piece = self.board.get_piece_at(pos)
