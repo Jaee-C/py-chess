@@ -1,6 +1,6 @@
 import re
 
-from .constants import INIT_FEN, OutOfBoundsError, NotYourTurn
+from .constants import INIT_FEN, OutOfBoundsError, NotYourTurn, InvalidPiece
 from .utils import Color, BoardCoordinates, parse_letter_coordinates
 from .piece import Piece, generate_piece
 
@@ -75,6 +75,27 @@ class Board:
                 result.append(coord)
 
         return list(map(parse_letter_coordinates, result))
+
+    def is_in_check(self, player: Color) -> bool:
+        """Checks whether `player` is currently checked"""
+        king_location = self._find_piece("K", player)
+
+        for pos, piece in self.state.items():
+            if piece.color == player:
+                continue
+
+            moves = piece.possible_moves(parse_letter_coordinates(pos))
+
+            if king_location in moves:
+                return True
+
+        return False
+
+    def _find_piece(self, abbr: str, color: Color) -> BoardCoordinates:
+        for coord, piece in self.state.items():
+            if piece.abbreviation == abbr and piece.color == color:
+                return parse_letter_coordinates(coord)
+        raise InvalidPiece("Piece not found")
 
     def _make_move(self, start: BoardCoordinates, end: BoardCoordinates):
         moved_piece = self.state[start.letter_notation()]
