@@ -30,7 +30,7 @@ class Piece(ABC):
 
         return legal_moves
 
-    def diagonal_moves(self, position: BoardCoordinates, distance: int):
+    def diagonal_moves(self, position: BoardCoordinates, distance: int) -> list[BoardCoordinates]:
         """Find all possible diagonal moves from a position up to (and including) `distance` steps"""
         legal_moves = []
         directions = ((1, 1), (-1, 1), (-1, -1), (1, -1))
@@ -63,13 +63,10 @@ class Piece(ABC):
         return BoardCoordinates(position.row + direction[0] * distance, position.col + direction[1] * distance)
 
     def _collision(self, position: BoardCoordinates) -> bool:
-        # TODO: check if there's a piece on the board at `position`
         return not position.is_in_bounds() or self.board.get_piece_at(position) is not None
 
     def _is_own_piece(self, position: BoardCoordinates) -> bool:
-        # TODO: check if there a piece of color `self.color` at `position`
-        piece = self.board.get_piece_at(position)
-        return piece is not None and self.board.get_piece_at(position).color == self.color
+        return self.board.get_piece_at(position) is not None and self.board.get_piece_at(position).color == self.color
 
 
 class Pawn(Piece):

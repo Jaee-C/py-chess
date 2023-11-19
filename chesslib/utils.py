@@ -15,6 +15,13 @@ class BoardCoordinates:
         self.row = row
         self.col = col
 
+    @classmethod
+    def from_algebra_notation(cls, col: str, row: int):
+        parsed_row = 8 - row
+        parsed_column = COLUMN_LABELS.index(col)
+
+        return cls(parsed_row, parsed_column)
+
     def __str__(self):
         return self.letter_notation()
 

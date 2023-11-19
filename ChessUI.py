@@ -6,7 +6,7 @@ from chesslib.board import Board
 from chesslib.piece import Piece
 
 
-class ChessEngine:
+class ChessUI:
     def __init__(self, screen: pygame.display):
         self.board = Board()
         self.screen = screen
