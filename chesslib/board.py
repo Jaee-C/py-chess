@@ -15,7 +15,6 @@ class Board:
         self.current_player: Color = Color.WHITE
 
         self.positions = []
-        self.highlighted: list[BoardCoordinates] = []
 
         self.load(INIT_FEN)
 
@@ -63,9 +62,6 @@ class Board:
         else:
             self.current_player = Color.BLACK
 
-    def highlight(self, pos: BoardCoordinates):
-        self.highlighted.append(pos)
-
     def occupied(self, color: Color) -> list[BoardCoordinates]:
         """Return all coordinates occupied by player `color`"""
         result: list[str] = []
@@ -107,7 +103,6 @@ class Board:
         self.current_player = enemy
 
         self._print_move(moved_piece, target, start, end)
-        self.highlighted = []
 
     def _update_coord_piece(self, coord: BoardCoordinates, piece: Piece | None):
         """

@@ -13,6 +13,7 @@ class ChessUI:
         self.icons: dict[str, pygame.image] = {}
 
         self.selected_position = None
+        self.highlighted: list[BoardCoordinates] = []
 
         self.load_images()
 
@@ -28,10 +29,11 @@ class ChessUI:
             return
         if self.board.move(self.selected_position, clicked_position):
             self.selected_position = None
+            self.highlighted = []
 
     def suggest_moves(self, pos: BoardCoordinates):
         piece = self.board.get_piece_at(pos)
-        self.board.highlighted = piece.possible_moves(pos)
+        self._highlight_all(piece.possible_moves(pos))
 
     def draw_game(self):
         self.draw_squares()
@@ -46,7 +48,7 @@ class ChessUI:
                 pygame.draw.rect(self.screen, square_color, pygame.Rect(row * SQUARE_SIZE, col * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
     def draw_highlighted(self):
-        for h in self.board.highlighted:
+        for h in self.highlighted:
             x = h.col * SQUARE_SIZE
             y = h.row * SQUARE_SIZE
             pygame.draw.rect(self.screen, "dark green", pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE))
@@ -77,7 +79,13 @@ class ChessUI:
     def _set_piece(self, pos: BoardCoordinates):
         self.selected_position = pos
         self.suggest_moves(pos)
-        self.board.highlight(pos)
+        self._highlight(pos)
+
+    def _highlight_all(self, pos_list: list[BoardCoordinates]):
+        self.highlighted = self.highlighted + pos_list
+
+    def _highlight(self, pos: BoardCoordinates):
+        self.highlighted.append(pos)
 
     def _get_piece_name(self, piece: Piece) -> str:
         return f"{piece.color}{piece.abbreviation.lower()}"
