@@ -1,7 +1,7 @@
 import pygame
 
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
-from ChessEngine import ChessEngine
+from ChessUI import ChessUI
 
 def main():
     pygame.init()
@@ -11,7 +11,7 @@ def main():
     dt = 0
 
     player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-    game = ChessEngine(screen)
+    game = ChessUI(screen)
 
     while running:
         for event in pygame.event.get():

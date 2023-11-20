@@ -1,18 +1,20 @@
 import pygame
 
 from constants import BOARD_SIZE, SQUARE_SIZE
-from chesslib.utils import BoardCoordinates
+from chesslib.utils import BoardCoordinates, Color, get_opponent
 from chesslib.board import Board
 from chesslib.piece import Piece
 
 
-class ChessEngine:
+class ChessUI:
     def __init__(self, screen: pygame.display):
         self.board = Board()
         self.screen = screen
         self.icons: dict[str, pygame.image] = {}
 
         self.selected_position = None
+        self.highlighted: list[BoardCoordinates] = []
+        self.check: BoardCoordinates | None = None
 
         self.load_images()
 
@@ -28,10 +30,14 @@ class ChessEngine:
             return
         if self.board.move(self.selected_position, clicked_position):
             self.selected_position = None
+            self.highlighted = []
+            self.check = None
+            if self.board.is_in_check(self.board.current_player):
+                self.check = self.board.find_piece("K", self.board.current_player)
 
     def suggest_moves(self, pos: BoardCoordinates):
         piece = self.board.get_piece_at(pos)
-        self.board.highlighted = piece.possible_moves(pos)
+        self._highlight_all(piece.possible_moves(pos))
 
     def draw_game(self):
         self.draw_squares()
@@ -46,10 +52,15 @@ class ChessEngine:
                 pygame.draw.rect(self.screen, square_color, pygame.Rect(row * SQUARE_SIZE, col * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
     def draw_highlighted(self):
-        for h in self.board.highlighted:
+        for h in self.highlighted:
             x = h.col * SQUARE_SIZE
             y = h.row * SQUARE_SIZE
             pygame.draw.rect(self.screen, "dark green", pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE))
+
+        if self.check is not None:
+            x = self.check.col * SQUARE_SIZE
+            y = self.check.row * SQUARE_SIZE
+            pygame.draw.rect(self.screen, "red", pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE))
 
     def draw_pieces(self):
         for row in range(BOARD_SIZE):
@@ -76,8 +87,15 @@ class ChessEngine:
 
     def _set_piece(self, pos: BoardCoordinates):
         self.selected_position = pos
+        self.highlighted = []
         self.suggest_moves(pos)
-        self.board.highlight(pos)
+        self._highlight(pos)
+
+    def _highlight_all(self, pos_list: list[BoardCoordinates]):
+        self.highlighted = self.highlighted + pos_list
+
+    def _highlight(self, pos: BoardCoordinates):
+        self.highlighted.append(pos)
 
     def _get_piece_name(self, piece: Piece) -> str:
         return f"{piece.color}{piece.abbreviation.lower()}"

@@ -1,7 +1,7 @@
 import re
 
-from .constants import INIT_FEN, OutOfBoundsError, NotYourTurn
-from .utils import Color, BoardCoordinates, parse_letter_coordinates
+from .constants import INIT_FEN, OutOfBoundsError, NotYourTurn, InvalidPiece
+from .utils import Color, BoardCoordinates, parse_letter_coordinates, get_opponent
 from .piece import Piece, generate_piece
 
 
@@ -15,7 +15,6 @@ class Board:
         self.current_player: Color = Color.WHITE
 
         self.positions = []
-        self.highlighted: list[BoardCoordinates] = []
 
         self.load(INIT_FEN)
 
@@ -39,10 +38,19 @@ class Board:
     def _valid_move(self, start: BoardCoordinates, end: BoardCoordinates) -> bool:
         moved_piece = self.get_piece_at(start)
         legal_moves = moved_piece.possible_moves(start)
-        if end in legal_moves:
-            return True
-        print("Illegal move")
-        return False
+        if end not in legal_moves:
+            print("Illegal move")
+            return False
+
+        # Check for check
+        self._make_move(start, end)
+        if self.is_in_check(self.current_player):
+            self._make_move(end, start)
+            print("You're in check!")
+            return False
+        self._make_move(end, start)
+
+        return True
 
     def load(self, config: str):
         """Import state from FEN notation"""
@@ -63,9 +71,6 @@ class Board:
         else:
             self.current_player = Color.BLACK
 
-    def highlight(self, pos: BoardCoordinates):
-        self.highlighted.append(pos)
-
     def occupied(self, color: Color) -> list[BoardCoordinates]:
         """Return all coordinates occupied by player `color`"""
         result: list[str] = []
@@ -76,17 +81,37 @@ class Board:
 
         return list(map(parse_letter_coordinates, result))
 
+    def is_in_check(self, player: Color) -> bool:
+        """Checks whether `player` is currently checked"""
+        king_location = self.find_piece("K", player)
+
+        for pos, piece in self.state.items():
+            if piece.color == player:
+                continue
+
+            moves = piece.possible_moves(parse_letter_coordinates(pos))
+
+            if king_location in moves:
+                return True
+
+        return False
+
+    def find_piece(self, abbr: str, color: Color) -> BoardCoordinates:
+        for coord, piece in self.state.items():
+            if piece.abbreviation == abbr and piece.color == color:
+                return parse_letter_coordinates(coord)
+        raise InvalidPiece("Piece not found")
+
     def _make_move(self, start: BoardCoordinates, end: BoardCoordinates):
         moved_piece = self.state[start.letter_notation()]
         self._update_coord_piece(start, None)
         self._update_coord_piece(end, moved_piece)
 
     def _finish_move(self, moved_piece: Piece, target: Piece, start: BoardCoordinates, end: BoardCoordinates):
-        enemy = self.get_opponent(self.current_player)
+        enemy = get_opponent(self.current_player)
         self.current_player = enemy
 
         self._print_move(moved_piece, target, start, end)
-        self.highlighted = []
 
     def _update_coord_piece(self, coord: BoardCoordinates, piece: Piece | None):
         """
@@ -98,11 +123,6 @@ class Board:
             del self.state[pos]
         else:
             self.state[pos] = piece
-
-    def get_opponent(self, color: Color):
-        if color == Color.WHITE:
-            return Color.BLACK
-        return Color.WHITE
 
     def get_piece_at(self, location: BoardCoordinates) -> Piece | None:
         coordinates = location.letter_notation()

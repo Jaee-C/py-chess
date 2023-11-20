@@ -15,6 +15,13 @@ class BoardCoordinates:
         self.row = row
         self.col = col
 
+    @classmethod
+    def from_algebra_notation(cls, col: str, row: int):
+        parsed_row = 8 - row
+        parsed_column = COLUMN_LABELS.index(col)
+
+        return cls(parsed_row, parsed_column)
+
     def __str__(self):
         return self.letter_notation()
 
@@ -39,3 +46,9 @@ def parse_letter_coordinates(value: str) -> BoardCoordinates:
     row = ROW_LABELS.index(int(value[1]))
 
     return BoardCoordinates(row, col)
+
+
+def get_opponent(color: Color):
+    if color == Color.WHITE:
+        return Color.BLACK
+    return Color.WHITE
