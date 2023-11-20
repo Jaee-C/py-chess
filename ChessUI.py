@@ -14,7 +14,7 @@ class ChessUI:
 
         self.selected_position = None
         self.highlighted: list[BoardCoordinates] = []
-        self.check: Color | None = None
+        self.check: BoardCoordinates | None = None
 
         self.load_images()
 
@@ -31,9 +31,9 @@ class ChessUI:
         if self.board.move(self.selected_position, clicked_position):
             self.selected_position = None
             self.highlighted = []
-
-        if clicked_piece is not None and self.board.is_in_check(get_opponent(clicked_piece.color)):
-            self.check = get_opponent(clicked_piece.color)
+            self.check = None
+            if self.board.is_in_check(self.board.current_player):
+                self.check = self.board.find_piece("K", self.board.current_player)
 
     def suggest_moves(self, pos: BoardCoordinates):
         piece = self.board.get_piece_at(pos)
@@ -56,6 +56,11 @@ class ChessUI:
             x = h.col * SQUARE_SIZE
             y = h.row * SQUARE_SIZE
             pygame.draw.rect(self.screen, "dark green", pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE))
+
+        if self.check is not None:
+            x = self.check.col * SQUARE_SIZE
+            y = self.check.row * SQUARE_SIZE
+            pygame.draw.rect(self.screen, "red", pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE))
 
     def draw_pieces(self):
         for row in range(BOARD_SIZE):
@@ -82,6 +87,7 @@ class ChessUI:
 
     def _set_piece(self, pos: BoardCoordinates):
         self.selected_position = pos
+        self.highlighted = []
         self.suggest_moves(pos)
         self._highlight(pos)
 

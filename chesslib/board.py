@@ -83,7 +83,7 @@ class Board:
 
     def is_in_check(self, player: Color) -> bool:
         """Checks whether `player` is currently checked"""
-        king_location = self._find_piece("K", player)
+        king_location = self.find_piece("K", player)
 
         for pos, piece in self.state.items():
             if piece.color == player:
@@ -96,7 +96,7 @@ class Board:
 
         return False
 
-    def _find_piece(self, abbr: str, color: Color) -> BoardCoordinates:
+    def find_piece(self, abbr: str, color: Color) -> BoardCoordinates:
         for coord, piece in self.state.items():
             if piece.abbreviation == abbr and piece.color == color:
                 return parse_letter_coordinates(coord)
