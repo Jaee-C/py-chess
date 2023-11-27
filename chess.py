@@ -6,9 +6,7 @@ from ChessUI import ChessUI
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    clock = pygame.time.Clock()
     running = True
-    dt = 0
 
     player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
     game = ChessUI(screen)
@@ -25,7 +23,6 @@ def main():
         game.draw_game()
 
         pygame.display.flip()
-        dt = clock.tick(60) / 1000
 
     pygame.quit()
 

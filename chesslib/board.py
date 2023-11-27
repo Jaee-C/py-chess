@@ -1,4 +1,5 @@
 import re
+import copy
 
 from .constants import INIT_FEN, OutOfBoundsError, NotYourTurn, InvalidPiece
 from .utils import Color, BoardCoordinates, parse_letter_coordinates, get_opponent
@@ -80,6 +81,27 @@ class Board:
                 result.append(coord)
 
         return list(map(parse_letter_coordinates, result))
+
+    def is_checkmate(self, player: Color) -> bool:
+        """Checks whether `player` is check-mated"""
+        if not self.is_in_check(player):
+            return False
+
+        for pos, piece in self.state.items():
+            if not piece.color == player:
+                continue
+
+            start = parse_letter_coordinates(pos)
+            moves = piece.possible_moves(start)
+
+            for move in moves:
+                clone = copy.deepcopy(self)
+                clone._make_move(start, move)
+                if not clone.is_in_check(player):
+                    return False
+                clone._make_move(move, start)
+
+        return True
 
     def is_in_check(self, player: Color) -> bool:
         """Checks whether `player` is currently checked"""

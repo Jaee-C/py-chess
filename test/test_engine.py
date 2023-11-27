@@ -90,6 +90,36 @@ class TestChessBoard(unittest.TestCase):
         result = test_board.is_in_check(Color.WHITE)
         self.assertEqual(False, result)
 
+    def test_checkmate(self):
+        test_board = ChessBoardStub()
+
+        test_board.insert(Rook(Color.WHITE), BoardCoordinates.from_algebra_notation('H', 1))
+        test_board.insert(Rook(Color.WHITE), BoardCoordinates.from_algebra_notation('G', 1))
+        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('H', 8))
+
+        result = test_board.is_checkmate(Color.BLACK)
+        self.assertEqual(True, result)
+
+    def test_checkmate_move_out(self):
+        test_board = ChessBoardStub()
+
+        test_board.insert(Rook(Color.WHITE), BoardCoordinates.from_algebra_notation('H', 1))
+        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('H', 8))
+
+        result = test_board.is_checkmate(Color.BLACK)
+        self.assertEqual(False, result)
+
+    def test_checkmate_kill_mate(self):
+        test_board = ChessBoardStub()
+
+        test_board.insert(Rook(Color.WHITE), BoardCoordinates.from_algebra_notation('H', 1))
+        test_board.insert(Rook(Color.WHITE), BoardCoordinates.from_algebra_notation('G', 1))
+        test_board.insert(Bishop(Color.BLACK), BoardCoordinates.from_algebra_notation("A", 8))
+        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('H', 8))
+
+        result = test_board.is_checkmate(Color.BLACK)
+        self.assertEqual(False, result)
+
 
 class ChessBoardStub(Board):
     def __init__(self):

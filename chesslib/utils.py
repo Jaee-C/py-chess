@@ -18,7 +18,7 @@ class BoardCoordinates:
     @classmethod
     def from_algebra_notation(cls, col: str, row: int):
         parsed_row = 8 - row
-        parsed_column = COLUMN_LABELS.index(col)
+        parsed_column = COLUMN_LABELS.index(col.upper())
 
         return cls(parsed_row, parsed_column)
 
