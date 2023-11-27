@@ -44,7 +44,7 @@ class Piece(ABC):
         collision = False
         moves = []
 
-        for i in range(1, distance):
+        for i in range(1, distance+1):
             if collision:
                 break
 

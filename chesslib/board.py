@@ -1,4 +1,5 @@
 import re
+import copy
 
 from .constants import INIT_FEN, OutOfBoundsError, NotYourTurn, InvalidPiece
 from .utils import Color, BoardCoordinates, parse_letter_coordinates, get_opponent
@@ -94,10 +95,11 @@ class Board:
             moves = piece.possible_moves(start)
 
             for move in moves:
-                self._make_move(start, move)
-                if not self.is_in_check(player):
+                clone = copy.deepcopy(self)
+                clone._make_move(start, move)
+                if not clone.is_in_check(player):
                     return False
-                self._make_move(move, start)
+                clone._make_move(move, start)
 
         return True
 
