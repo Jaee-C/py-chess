@@ -2,12 +2,17 @@ import re
 import copy
 
 from .constants import INIT_FEN, OutOfBoundsError, NotYourTurn, InvalidPiece
-from .utils import Color, BoardCoordinates, parse_letter_coordinates, get_opponent
-from .piece import Piece, generate_piece
+from .utils import Color, BoardCoordinates, parse_letter_coordinates, get_opponent, ChessMove
+from chesslib.piece import generate_piece
+from chesslib.piece.piece import Piece
 
 
 def expand_blanks(match: re.Match[str]) -> str:
     return " " * int(match.group(0))
+
+
+def extract_move(move: ChessMove) -> BoardCoordinates:
+    return move.end
 
 
 class Board:
@@ -39,7 +44,7 @@ class Board:
     def _valid_move(self, start: BoardCoordinates, end: BoardCoordinates) -> bool:
         moved_piece = self.get_piece_at(start)
         legal_moves = moved_piece.possible_moves(start)
-        if end not in legal_moves:
+        if end not in map(extract_move, legal_moves):
             print("Illegal move")
             return False
 
@@ -96,10 +101,10 @@ class Board:
 
             for move in moves:
                 clone = copy.deepcopy(self)
-                clone._make_move(start, move)
+                clone._make_move(move.start, move.end)
                 if not clone.is_in_check(player):
                     return False
-                clone._make_move(move, start)
+                clone._make_move(move.end, move.start)
 
         return True
 
@@ -113,7 +118,7 @@ class Board:
 
             moves = piece.possible_moves(parse_letter_coordinates(pos))
 
-            if king_location in moves:
+            if king_location in map(extract_move, moves):
                 return True
 
         return False
