@@ -1,4 +1,5 @@
-from chesslib.utils import Color, BoardCoordinates, ChessMove, MoveType
+from chesslib.utils import Color, BoardCoordinates
+from ..chess_move import MoveType, ChessMove
 from chesslib.constants import InvalidPiece
 from .piece import Piece
 

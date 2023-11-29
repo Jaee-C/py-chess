@@ -1,4 +1,5 @@
-from chesslib.utils import Color, BoardCoordinates, ChessMove, MoveType
+from chesslib.utils import Color, BoardCoordinates
+from ..chess_move import MoveType, ChessMove
 from .piece import Piece
 
 
@@ -41,8 +42,16 @@ class Pawn(Piece):
 
         return legal_moves
 
+    def pawn_is_moved(self, move: ChessMove):
+        if move.type == MoveType.REGULAR and move.start.row == self.home_row:
+            self.first_move = True
+            return
+
+        if self.first_move:
+            self.first_move = False
+
     def _can_en_passant(self, start: BoardCoordinates, end: BoardCoordinates) -> bool:
-        if not (start.row == end.row + self.direction and abs(start.col - end.col) == 1):
+        if not (start.row + self.direction == end.row or abs(start.col - end.col) == 1):
             return False
 
         if (not self.home_row + 3 * self.direction == start.row) or self.board.get_piece_at(end) is not None:
@@ -51,7 +60,7 @@ class Pawn(Piece):
         target_location = BoardCoordinates(start.row, end.col)
         target_pawn = self.board.get_piece_at(target_location)
 
-        if target_pawn is None or target_pawn.abbreviation == "P" or not target_pawn.first_move:
+        if target_pawn is None or target_pawn.abbreviation != "P" or not target_pawn.first_move:
             return False
 
         return True

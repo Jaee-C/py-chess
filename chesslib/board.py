@@ -2,9 +2,9 @@ import re
 import copy
 
 from .constants import INIT_FEN, OutOfBoundsError, NotYourTurn, InvalidPiece
-from .utils import Color, BoardCoordinates, parse_letter_coordinates, get_opponent, ChessMove
-from chesslib.piece import generate_piece
-from chesslib.piece.piece import Piece
+from .utils import Color, BoardCoordinates, parse_letter_coordinates, get_opponent
+from .chess_move import MoveType, ChessMove
+from chesslib.piece import generate_piece, Piece, Pawn
 
 
 def expand_blanks(match: re.Match[str]) -> str:
@@ -19,6 +19,7 @@ class Board:
     def __init__(self):
         self.state: dict[str, Piece] = {}
         self.current_player: Color = Color.WHITE
+        self.previous_moved_piece: Piece | None = None
 
         self.positions = []
 
@@ -34,29 +35,31 @@ class Board:
         if not moved_piece.color == self.current_player:
             raise NotYourTurn
 
-        if not self._valid_move(start, end):
+        valid_move = self._valid_move(start, end)
+
+        if valid_move is None:
             return False
 
-        self._make_move(start, end)
+        self._make_move(valid_move)
         self._finish_move(moved_piece, target, start, end)
         return True
 
-    def _valid_move(self, start: BoardCoordinates, end: BoardCoordinates) -> bool:
+    def _valid_move(self, start: BoardCoordinates, end: BoardCoordinates) -> ChessMove | None:
         moved_piece = self.get_piece_at(start)
         legal_moves = moved_piece.possible_moves(start)
-        if end not in map(extract_move, legal_moves):
+
+        filtered_move = list(filter(lambda x: x.end == end, legal_moves))
+
+        if len(filtered_move) != 1:
             print("Illegal move")
-            return False
+            return None
 
         # Check for check
-        self._make_move(start, end)
-        if self.is_in_check(self.current_player):
-            self._make_move(end, start)
+        if self._is_in_check(self.current_player, ChessMove(start, end, MoveType.REGULAR)):
             print("You're in check!")
-            return False
-        self._make_move(end, start)
+            return None
 
-        return True
+        return filtered_move[0]
 
     def load(self, config: str):
         """Import state from FEN notation"""
@@ -89,7 +92,7 @@ class Board:
 
     def is_checkmate(self, player: Color) -> bool:
         """Checks whether `player` is check-mated"""
-        if not self.is_in_check(player):
+        if not self.check_validator(player):
             return False
 
         for pos, piece in self.state.items():
@@ -100,17 +103,23 @@ class Board:
             moves = piece.possible_moves(start)
 
             for move in moves:
-                clone = copy.deepcopy(self)
-                clone._make_move(move.start, move.end)
-                if not clone.is_in_check(player):
+                if not self._is_in_check(player, move):
                     return False
-                clone._make_move(move.end, move.start)
 
         return True
 
-    def is_in_check(self, player: Color) -> bool:
+    def _is_in_check(self, player: Color, move: ChessMove) -> bool:
+        clone = copy.deepcopy(self)
+        clone._make_move(move)
+
+        return clone.check_validator(player)
+
+    def check_validator(self, player: Color) -> bool:
         """Checks whether `player` is currently checked"""
         king_location = self.find_piece("K", player)
+
+        if king_location is None:
+            return False
 
         for pos, piece in self.state.items():
             if piece.color == player:
@@ -123,16 +132,39 @@ class Board:
 
         return False
 
-    def find_piece(self, abbr: str, color: Color) -> BoardCoordinates:
+    def find_piece(self, abbr: str, color: Color) -> BoardCoordinates | None:
         for coord, piece in self.state.items():
             if piece.abbreviation == abbr and piece.color == color:
                 return parse_letter_coordinates(coord)
-        raise InvalidPiece("Piece not found")
+        print("Piece not found")
+        return None
 
-    def _make_move(self, start: BoardCoordinates, end: BoardCoordinates):
-        moved_piece = self.state[start.letter_notation()]
-        self._update_coord_piece(start, None)
-        self._update_coord_piece(end, moved_piece)
+    def _make_move(self, move: ChessMove):
+        self._move_pawn(move)
+        match move.type:
+            case MoveType.EN_PASSANT:
+                self._make_en_passant_move(move)
+            case _:
+                self._make_regular_move(move)
+
+    def _make_regular_move(self, move: ChessMove):
+        moved_piece = self.state[move.start.letter_notation()]
+        self._update_coord_piece(move.start, None)
+        self._update_coord_piece(move.end, moved_piece)
+
+    def _make_en_passant_move(self, move: ChessMove):
+        moved_piece = self.state[move.start.letter_notation()]
+        assert (isinstance(moved_piece, Pawn))
+
+        target_location = BoardCoordinates(move.start.row, move.end.col)
+        self._update_coord_piece(target_location, None)
+        self._make_regular_move(move)
+
+    def _move_pawn(self, move: ChessMove):
+        moved_piece = self.state[move.start.letter_notation()]
+        assert (isinstance(moved_piece, Pawn))
+
+        moved_piece.pawn_is_moved(move)
 
     def _finish_move(self, moved_piece: Piece, target: Piece, start: BoardCoordinates, end: BoardCoordinates):
         enemy = get_opponent(self.current_player)

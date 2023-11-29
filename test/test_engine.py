@@ -12,7 +12,7 @@ class TestCheck(unittest.TestCase):
         test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
         test_board.insert(Pawn(Color.WHITE), algebra_coordinates('D', 7))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(True, result)
 
     def test_check_rook(self):
@@ -21,7 +21,7 @@ class TestCheck(unittest.TestCase):
         test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
         test_board.insert(Rook(Color.WHITE), algebra_coordinates('A', 8))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(True, result)
 
     def test_check_bishop(self):
@@ -30,7 +30,7 @@ class TestCheck(unittest.TestCase):
         test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
         test_board.insert(Bishop(Color.WHITE), algebra_coordinates('A', 4))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(True, result)
 
     def test_check_knight(self):
@@ -39,7 +39,7 @@ class TestCheck(unittest.TestCase):
         test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
         test_board.insert(Knight(Color.WHITE), algebra_coordinates('D', 6))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(True, result)
 
     def test_check_knight_blocked(self):
@@ -50,7 +50,7 @@ class TestCheck(unittest.TestCase):
         test_board.insert(Pawn(Color.BLACK), algebra_coordinates('D', 7))
         test_board.insert(Knight(Color.WHITE), algebra_coordinates('D', 6))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(True, result)
 
     def test_check_bishop_blocked(self):
@@ -60,7 +60,7 @@ class TestCheck(unittest.TestCase):
         test_board.insert(Pawn(Color.BLACK), algebra_coordinates('D', 7))
         test_board.insert(Bishop(Color.WHITE), algebra_coordinates('A', 4))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(False, result)
 
     def test_check_pawn_black(self):
@@ -69,7 +69,7 @@ class TestCheck(unittest.TestCase):
         test_board.insert(King(Color.WHITE), algebra_coordinates('E', 1))
         test_board.insert(Pawn(Color.BLACK), algebra_coordinates('D', 2))
 
-        result = test_board.is_in_check(Color.WHITE)
+        result = test_board.check_validator(Color.WHITE)
         self.assertEqual(True, result)
 
     def test_no_check(self):
@@ -78,7 +78,7 @@ class TestCheck(unittest.TestCase):
         test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
         test_board.insert(Pawn(Color.WHITE), algebra_coordinates('E', 7))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(False, result)
 
     def test_no_check_wrong_player(self):
@@ -88,7 +88,7 @@ class TestCheck(unittest.TestCase):
         test_board.insert(King(Color.WHITE), algebra_coordinates('E', 1))
         test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
 
-        result = test_board.is_in_check(Color.WHITE)
+        result = test_board.check_validator(Color.WHITE)
         self.assertEqual(False, result)
 
     def test_checkmate(self):

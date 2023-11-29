@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from chesslib.utils import BoardCoordinates, Color, ChessMove, MoveType
-
+from chesslib.utils import BoardCoordinates, Color
+from chesslib.chess_move import MoveType, ChessMove
 
 Direction = tuple[int, int]
 
