@@ -6,6 +6,7 @@ from chesslib.utils import BoardCoordinates
 class MoveType(Enum):
     REGULAR = 1
     EN_PASSANT = 2
+    CASTLING = 3
 
 
 class ChessMove:

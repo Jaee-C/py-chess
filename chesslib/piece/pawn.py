@@ -45,7 +45,6 @@ class Pawn(Piece):
     def pawn_is_moved(self, move: ChessMove):
         if move.type == MoveType.REGULAR and move.start.row == self.home_row:
             self.first_move = True
-            return
 
     def _can_en_passant(self, start: BoardCoordinates, end: BoardCoordinates) -> bool:
         if not (start.row + self.direction == end.row or abs(start.col - end.col) == 1):

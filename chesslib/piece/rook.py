@@ -8,6 +8,7 @@ class Rook(Piece):
     def __init__(self, color: Color):
         super().__init__(color)
         self.abbreviation = "R"
+        self.moved = False
 
     def possible_moves(self, position: BoardCoordinates) -> list[ChessMove]:
         return super().orthogonal_moves(position, BOARD_SIZE)

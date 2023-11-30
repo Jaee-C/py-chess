@@ -3,6 +3,7 @@ import pygame
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from ChessUI import ChessUI
 
+
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
