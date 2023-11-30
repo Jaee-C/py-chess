@@ -32,12 +32,16 @@ class ChessUI:
             self.selected_position = None
             self.highlighted = []
             self.check = None
-            if self.board.is_in_check(self.board.current_player):
+            if self.board.check_validator(self.board.current_player):
                 self.check = self.board.find_piece("K", self.board.current_player)
+
+            if self.board.is_checkmate(self.board.current_player):
+                print("Checkmate! Game Over.")
 
     def suggest_moves(self, pos: BoardCoordinates):
         piece = self.board.get_piece_at(pos)
-        self._highlight_all(piece.possible_moves(pos))
+        possible_moves = piece.possible_moves(pos)
+        self._highlight_all(list(map(lambda x: x.end, possible_moves)))
 
     def draw_game(self):
         self.draw_squares()

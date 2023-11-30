@@ -1,101 +1,102 @@
 import unittest
+
 from chesslib.board import Board, Color
 from chesslib.piece import Piece, King, Pawn, Rook, Knight, Bishop
 from chesslib.utils import BoardCoordinates
 
 
-class TestChessBoard(unittest.TestCase):
+class TestCheck(unittest.TestCase):
     def test_check_pawn(self):
         test_board = ChessBoardStub()
 
-        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('E', 8))
-        test_board.insert(Pawn(Color.WHITE), BoardCoordinates.from_algebra_notation('D', 7))
+        test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('D', 7))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(True, result)
 
     def test_check_rook(self):
         test_board = ChessBoardStub()
 
-        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('E', 8))
-        test_board.insert(Rook(Color.WHITE), BoardCoordinates.from_algebra_notation('A', 8))
+        test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
+        test_board.insert(Rook(Color.WHITE), algebra_coordinates('A', 8))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(True, result)
 
     def test_check_bishop(self):
         test_board = ChessBoardStub()
 
-        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('E', 8))
-        test_board.insert(Bishop(Color.WHITE), BoardCoordinates.from_algebra_notation('A', 4))
+        test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
+        test_board.insert(Bishop(Color.WHITE), algebra_coordinates('A', 4))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(True, result)
 
     def test_check_knight(self):
         test_board = ChessBoardStub()
 
-        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('E', 8))
-        test_board.insert(Knight(Color.WHITE), BoardCoordinates.from_algebra_notation('D', 6))
+        test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
+        test_board.insert(Knight(Color.WHITE), algebra_coordinates('D', 6))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(True, result)
 
     def test_check_knight_blocked(self):
         test_board = ChessBoardStub()
 
-        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('E', 8))
-        test_board.insert(Pawn(Color.BLACK), BoardCoordinates.from_algebra_notation('C', 7))
-        test_board.insert(Pawn(Color.BLACK), BoardCoordinates.from_algebra_notation('D', 7))
-        test_board.insert(Knight(Color.WHITE), BoardCoordinates.from_algebra_notation('D', 6))
+        test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
+        test_board.insert(Pawn(Color.BLACK), algebra_coordinates('C', 7))
+        test_board.insert(Pawn(Color.BLACK), algebra_coordinates('D', 7))
+        test_board.insert(Knight(Color.WHITE), algebra_coordinates('D', 6))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(True, result)
 
     def test_check_bishop_blocked(self):
         test_board = ChessBoardStub()
 
-        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('E', 8))
-        test_board.insert(Pawn(Color.BLACK), BoardCoordinates.from_algebra_notation('D', 7))
-        test_board.insert(Bishop(Color.WHITE), BoardCoordinates.from_algebra_notation('A', 4))
+        test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
+        test_board.insert(Pawn(Color.BLACK), algebra_coordinates('D', 7))
+        test_board.insert(Bishop(Color.WHITE), algebra_coordinates('A', 4))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(False, result)
 
     def test_check_pawn_black(self):
         test_board = ChessBoardStub()
 
-        test_board.insert(King(Color.WHITE), BoardCoordinates.from_algebra_notation('E', 1))
-        test_board.insert(Pawn(Color.BLACK), BoardCoordinates.from_algebra_notation('D', 2))
+        test_board.insert(King(Color.WHITE), algebra_coordinates('E', 1))
+        test_board.insert(Pawn(Color.BLACK), algebra_coordinates('D', 2))
 
-        result = test_board.is_in_check(Color.WHITE)
+        result = test_board.check_validator(Color.WHITE)
         self.assertEqual(True, result)
 
     def test_no_check(self):
         test_board = ChessBoardStub()
 
-        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('E', 8))
-        test_board.insert(Pawn(Color.WHITE), BoardCoordinates.from_algebra_notation('E', 7))
+        test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('E', 7))
 
-        result = test_board.is_in_check(Color.BLACK)
+        result = test_board.check_validator(Color.BLACK)
         self.assertEqual(False, result)
 
     def test_no_check_wrong_player(self):
         test_board = ChessBoardStub()
 
-        test_board.insert(Pawn(Color.WHITE), BoardCoordinates.from_algebra_notation('D', 7))
-        test_board.insert(King(Color.WHITE), BoardCoordinates.from_algebra_notation('E', 1))
-        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('E', 8))
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('D', 7))
+        test_board.insert(King(Color.WHITE), algebra_coordinates('E', 1))
+        test_board.insert(King(Color.BLACK), algebra_coordinates('E', 8))
 
-        result = test_board.is_in_check(Color.WHITE)
+        result = test_board.check_validator(Color.WHITE)
         self.assertEqual(False, result)
 
     def test_checkmate(self):
         test_board = ChessBoardStub()
 
-        test_board.insert(Rook(Color.WHITE), BoardCoordinates.from_algebra_notation('H', 1))
-        test_board.insert(Rook(Color.WHITE), BoardCoordinates.from_algebra_notation('G', 1))
-        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('H', 8))
+        test_board.insert(Rook(Color.WHITE), algebra_coordinates('H', 1))
+        test_board.insert(Rook(Color.WHITE), algebra_coordinates('G', 1))
+        test_board.insert(King(Color.BLACK), algebra_coordinates('H', 8))
 
         result = test_board.is_checkmate(Color.BLACK)
         self.assertEqual(True, result)
@@ -103,8 +104,8 @@ class TestChessBoard(unittest.TestCase):
     def test_checkmate_move_out(self):
         test_board = ChessBoardStub()
 
-        test_board.insert(Rook(Color.WHITE), BoardCoordinates.from_algebra_notation('H', 1))
-        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('H', 8))
+        test_board.insert(Rook(Color.WHITE), algebra_coordinates('H', 1))
+        test_board.insert(King(Color.BLACK), algebra_coordinates('H', 8))
 
         result = test_board.is_checkmate(Color.BLACK)
         self.assertEqual(False, result)
@@ -112,12 +113,83 @@ class TestChessBoard(unittest.TestCase):
     def test_checkmate_kill_mate(self):
         test_board = ChessBoardStub()
 
-        test_board.insert(Rook(Color.WHITE), BoardCoordinates.from_algebra_notation('H', 1))
-        test_board.insert(Rook(Color.WHITE), BoardCoordinates.from_algebra_notation('G', 1))
-        test_board.insert(Bishop(Color.BLACK), BoardCoordinates.from_algebra_notation("A", 8))
-        test_board.insert(King(Color.BLACK), BoardCoordinates.from_algebra_notation('H', 8))
+        test_board.insert(Rook(Color.WHITE), algebra_coordinates('H', 1))
+        test_board.insert(Rook(Color.WHITE), algebra_coordinates('G', 1))
+        test_board.insert(Bishop(Color.BLACK), algebra_coordinates("A", 8))
+        test_board.insert(King(Color.BLACK), algebra_coordinates('H', 8))
 
         result = test_board.is_checkmate(Color.BLACK)
+        self.assertEqual(False, result)
+
+
+class TestSpecialMoves(unittest.TestCase):
+    def test_enpassant_valid_white(self):
+        test_board = ChessBoardStub()
+
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('B', 5))
+        test_board.insert(Pawn(Color.BLACK), algebra_coordinates('A', 7))
+        
+        test_board.set_player(Color.BLACK)
+        
+        _ = test_board.move(algebra_coordinates('A', 7), algebra_coordinates('A', 5))
+        result = test_board.move(algebra_coordinates('B', 5), algebra_coordinates('A', 6))  # En passant
+
+        self.assertEqual(True, result)
+
+    def test_enpassant_invalid_multiple_moves(self):
+        test_board = ChessBoardStub()
+
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('B', 5))
+        test_board.insert(Pawn(Color.BLACK), algebra_coordinates('A', 6))
+
+        test_board.set_player(Color.BLACK)
+
+        _ = test_board.move(algebra_coordinates('A', 6), algebra_coordinates('A', 5))
+        result = test_board.move(algebra_coordinates('B', 5), algebra_coordinates('A', 6))  # En passant
+
+        self.assertEqual(False, result)
+
+    def test_enpassant_invalid_skipped_moves(self):
+        test_board = ChessBoardStub()
+
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('B', 5))
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('E', 2))
+        test_board.insert(Pawn(Color.BLACK), algebra_coordinates('A', 7))
+        test_board.insert(Pawn(Color.BLACK), algebra_coordinates('D', 7))
+
+        test_board.set_player(Color.BLACK)
+
+        _ = test_board.move(algebra_coordinates('A', 7), algebra_coordinates('A', 5))
+        _ = test_board.move(algebra_coordinates('E', 2), algebra_coordinates('E', 3))
+        _ = test_board.move(algebra_coordinates('D', 7), algebra_coordinates('D', 5))
+        result = test_board.move(algebra_coordinates('B', 5), algebra_coordinates('A', 6))  # En passant
+
+        self.assertEqual(False, result)
+
+    def test_enpassant_invalid_wrong_row(self):
+        test_board = ChessBoardStub()
+
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('B', 4))
+        test_board.insert(Pawn(Color.BLACK), algebra_coordinates('A', 5))
+
+        test_board.set_player(Color.BLACK)
+
+        _ = test_board.move(algebra_coordinates('A', 5), algebra_coordinates('A', 4))
+        result = test_board.move(algebra_coordinates('B', 4), algebra_coordinates('A', 5))  # En passant
+
+        self.assertEqual(False, result)
+
+    def test_enpassant_target_not_pawn(self):
+        test_board = ChessBoardStub()
+
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('B', 5))
+        test_board.insert(Rook(Color.BLACK), algebra_coordinates('A', 7))
+
+        test_board.set_player(Color.BLACK)
+
+        _ = test_board.move(algebra_coordinates('A', 7), algebra_coordinates('A', 5))
+        result = test_board.move(algebra_coordinates('B', 5), algebra_coordinates('A', 6))  # En passant
+
         self.assertEqual(False, result)
 
 
@@ -135,6 +207,10 @@ class ChessBoardStub(Board):
 
     def set_player(self, color: Color):
         self.current_player = color
+
+
+def algebra_coordinates(col: str, row: int) -> BoardCoordinates:
+    return BoardCoordinates.from_algebra_notation(col, row)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,13 @@
+from chesslib.utils import Color, BoardCoordinates
+from ..chess_move import ChessMove
+from chesslib.constants import BOARD_SIZE
+from .piece import Piece
+
+
+class Rook(Piece):
+    def __init__(self, color: Color):
+        super().__init__(color)
+        self.abbreviation = "R"
+
+    def possible_moves(self, position: BoardCoordinates) -> list[ChessMove]:
+        return super().orthogonal_moves(position, BOARD_SIZE)
