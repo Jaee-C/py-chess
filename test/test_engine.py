@@ -136,6 +136,62 @@ class TestSpecialMoves(unittest.TestCase):
 
         self.assertEqual(True, result)
 
+    def test_enpassant_invalid_multiple_moves(self):
+        test_board = ChessBoardStub()
+
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('B', 5))
+        test_board.insert(Pawn(Color.BLACK), algebra_coordinates('A', 6))
+
+        test_board.set_player(Color.BLACK)
+
+        _ = test_board.move(algebra_coordinates('A', 6), algebra_coordinates('A', 5))
+        result = test_board.move(algebra_coordinates('B', 5), algebra_coordinates('A', 6))  # En passant
+
+        self.assertEqual(False, result)
+
+    def test_enpassant_invalid_skipped_moves(self):
+        test_board = ChessBoardStub()
+
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('B', 5))
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('E', 2))
+        test_board.insert(Pawn(Color.BLACK), algebra_coordinates('A', 7))
+        test_board.insert(Pawn(Color.BLACK), algebra_coordinates('D', 7))
+
+        test_board.set_player(Color.BLACK)
+
+        _ = test_board.move(algebra_coordinates('A', 7), algebra_coordinates('A', 5))
+        _ = test_board.move(algebra_coordinates('E', 2), algebra_coordinates('E', 3))
+        _ = test_board.move(algebra_coordinates('D', 7), algebra_coordinates('D', 5))
+        result = test_board.move(algebra_coordinates('B', 5), algebra_coordinates('A', 6))  # En passant
+
+        self.assertEqual(False, result)
+
+    def test_enpassant_invalid_wrong_row(self):
+        test_board = ChessBoardStub()
+
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('B', 4))
+        test_board.insert(Pawn(Color.BLACK), algebra_coordinates('A', 5))
+
+        test_board.set_player(Color.BLACK)
+
+        _ = test_board.move(algebra_coordinates('A', 5), algebra_coordinates('A', 4))
+        result = test_board.move(algebra_coordinates('B', 4), algebra_coordinates('A', 5))  # En passant
+
+        self.assertEqual(False, result)
+
+    def test_enpassant_target_not_pawn(self):
+        test_board = ChessBoardStub()
+
+        test_board.insert(Pawn(Color.WHITE), algebra_coordinates('B', 5))
+        test_board.insert(Rook(Color.BLACK), algebra_coordinates('A', 7))
+
+        test_board.set_player(Color.BLACK)
+
+        _ = test_board.move(algebra_coordinates('A', 7), algebra_coordinates('A', 5))
+        result = test_board.move(algebra_coordinates('B', 5), algebra_coordinates('A', 6))  # En passant
+
+        self.assertEqual(False, result)
+
 
 class ChessBoardStub(Board):
     def __init__(self):

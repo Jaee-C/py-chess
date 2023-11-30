@@ -19,7 +19,7 @@ class Board:
     def __init__(self):
         self.state: dict[str, Piece] = {}
         self.current_player: Color = Color.WHITE
-        self.previous_moved_piece: Piece | None = None
+        self.previous_moved_pawn: BoardCoordinates | None = None
 
         self.positions = []
 
@@ -30,6 +30,7 @@ class Board:
         if not start.is_in_bounds() or not end.is_in_bounds():
             raise OutOfBoundsError
 
+        self.previous_moved_pawn = None
         moved_piece = self.get_piece_at(start)
         target = self.get_piece_at(end)
         if not moved_piece.color == self.current_player:
@@ -162,13 +163,25 @@ class Board:
 
     def _move_pawn(self, move: ChessMove):
         moved_piece = self.state[move.start.letter_notation()]
-        assert (isinstance(moved_piece, Pawn))
+        if not isinstance(moved_piece, Pawn):
+            return
+
+        self.previous_moved_pawn = move.end
 
         moved_piece.pawn_is_moved(move)
+
+    def _reset_pawns(self):
+        if self.previous_moved_pawn is None:
+            return
+
+        for location, p in self.state.items():
+            if isinstance(p, Pawn) and parse_letter_coordinates(location) != self.previous_moved_pawn:
+                p.first_move = False
 
     def _finish_move(self, moved_piece: Piece, target: Piece, start: BoardCoordinates, end: BoardCoordinates):
         enemy = get_opponent(self.current_player)
         self.current_player = enemy
+        self._reset_pawns()
 
         self._print_move(moved_piece, target, start, end)
 

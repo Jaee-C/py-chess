@@ -47,9 +47,6 @@ class Pawn(Piece):
             self.first_move = True
             return
 
-        if self.first_move:
-            self.first_move = False
-
     def _can_en_passant(self, start: BoardCoordinates, end: BoardCoordinates) -> bool:
         if not (start.row + self.direction == end.row or abs(start.col - end.col) == 1):
             return False
